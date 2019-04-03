@@ -30,19 +30,22 @@ void daemonize(){
     
 }
 
-void *func1(void *arg){
-    printf("this task 1\n");
-    return NULL;
+void func1(void *arg){
+    printf("this task 1 start.\n");
+    sleep(1);
+    printf("this task 1 end.\n");
 }
 
-void *func2(void *arg){
-    printf("this task 2\n");
-    return NULL;
+void func2(void *arg){
+    printf("this task 2 start\n");
+    sleep(1);
+    printf("this task 2 end\n");
 }
 
-void *func3(void *arg){
-    printf("this task 3\n");
-    return NULL;
+void func3(void *arg){
+    printf("this task 3 start\n");
+    sleep(1);
+    printf("this task 3 end\n");
 }
 
 int main(void){

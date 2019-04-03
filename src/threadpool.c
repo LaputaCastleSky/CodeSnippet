@@ -2,6 +2,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "threadpool.h"
+#include "common.h"
+
+#define thread_pool_queue_init(q) \
+    (q)->first = NULL; \
+    (q)->last = &(q)->first
 
 void *thread_pool_cycle(void *arg);
 
@@ -10,18 +15,27 @@ void *thread_pool_cycle(void *arg){
     thread_task_t *task = NULL;
 
     for(;;){
-        pthread_mutex_lock(&pool->mutex);
-
-        while(pool->head == NULL){
-            pthread_cond_wait(&pool->cond, &pool->mutex);
+        if (OK != pthread_mutex_lock(&pool->mutex)){
+            return NULL;
         }
 
-        task = pool->head;
-        pool->head = pool->head->next;
+        while(pool->queue.first == NULL){
+            if(OK != pthread_cond_wait(&pool->cond, &pool->mutex)){
+                pthread_mutex_unlock(&pool->mutex);
+                return NULL;
+            }
+        }
 
-        task->handle(task->arg);
+        task = pool->queue.first;
+        pool->queue.first = task->next;
+
+        if(pool->queue.first == NULL){
+            pool->queue.last = &pool->queue.first;
+        }
 
         pthread_mutex_unlock(&pool->mutex);
+
+        task->handle(task->arg);
     }
     return NULL;
 }
@@ -29,15 +43,13 @@ void *thread_pool_cycle(void *arg){
 void thread_pool_task_post(thread_pool_t *pool, thread_task_t *task){
     pthread_mutex_lock(&pool->mutex);
 
-    if(pool->head == NULL){
-        pool->head = task;
-        pool->tail = task;
-    }else{
-        pool->tail->next = task;
-        pool->tail = task;
-    }
+    *pool->queue.last = task;
+    pool->queue.last = &task->next;
 
-    pthread_cond_signal(&pool->cond);
+    if(OK != pthread_cond_signal(&pool->cond)){
+        pthread_mutex_unlock(&pool->mutex);
+        return;
+    }
 
     pthread_mutex_unlock(&pool->mutex);
 }
@@ -55,14 +67,20 @@ thread_pool_t *thread_pool_init(int threads){
 
     pool->threads = threads;
 
-    pool->head = NULL;
-    pool->tail = NULL;
+    thread_pool_queue_init(&pool->queue);
 
-    pthread_mutex_init(&pool->mutex, NULL);
-    pthread_cond_init(&pool->cond, NULL);
+    if(OK != pthread_mutex_init(&pool->mutex, NULL)){
+        printf("pthread_mutex_init error.\n");
+        return NULL;
+    }
+    
+    if(OK != pthread_cond_init(&pool->cond, NULL)){
+        printf("pthread_cond_init error.\n");
+        return NULL;
+    }
 
     for (i = 0; i < pool->threads; i++){
-        if(pthread_create(&tid, NULL, thread_pool_cycle, (void *)pool) != 0){
+        if(OK != pthread_create(&tid, NULL, thread_pool_cycle, (void *)pool)){
             printf("create thread failed.");
             return NULL;
         }
@@ -74,7 +92,6 @@ thread_pool_t *thread_pool_init(int threads){
 void thread_pool_destroy(thread_pool_t *pool){
     pthread_mutex_destroy(&pool->mutex);
     pthread_cond_destroy(&pool->cond);
-
     free(pool);
 }
 

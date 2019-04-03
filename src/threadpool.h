@@ -3,18 +3,21 @@
 #include <pthread.h>
 
 typedef struct thread_task_s{
-    void *(*handle)(void *arg);
+    void (*handle)(void *arg);
     void *arg;
     struct thread_task_s *next;
 }thread_task_t;
 
+typedef struct{
+    thread_task_t *first;
+    thread_task_t **last;
+}thread_pool_queue_t;
+
 typedef struct thread_pool_s{
     int threads;
-    thread_task_t *tail;
-    thread_task_t *head;
+    thread_pool_queue_t queue;
     pthread_mutex_t mutex;
     pthread_cond_t cond;
-
 }thread_pool_t;
 
 /*t*/
