@@ -1,4 +1,4 @@
-OBJECTS=threadpool.o main.o
+OBJECTS=threadpool.o main.o binary_tree.o
 TARGET=snippet
 CC=clang
 CFLAGS=-g -Wall

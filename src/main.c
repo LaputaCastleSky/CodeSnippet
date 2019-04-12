@@ -5,6 +5,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "threadpool.h"
+#include "alg_stack.h"
+#include "binary_tree.h"
 
 void daemonize(){
     int fd;
@@ -48,8 +50,31 @@ void func3(void *arg){
     printf("this task 3 end\n");
 }
 
-int main(void){
-    //daemonize();
+void test_tree(){
+    tree_t t;
+    int vals[] = {7,5,8,3,6,9,1,2};
+    // int vals[] = {7,5,3};
+    int size = sizeof(vals)/sizeof(int);
+    int i = 0;
+    tree_init(&t);
+
+    for (i = 0; i < size; i++){
+        tree_insert(&t, vals[i]);
+    }
+
+    tree_inorder_without_recursion(&t);
+    tree_preorder_without_recursion1(&t);
+    tree_postorder_without_recursion(&t);
+
+    int *arr = NULL;
+    arr = tree_preorder_traversal(&t, &size);
+    for(i = 0; i < size; i++){
+        printf("%4d", arr[i]);
+    }
+    printf("\n");
+}
+
+void test_threadpool(){
     thread_pool_t *pool = NULL;
     thread_task_t task1;
     thread_task_t task2;
@@ -64,5 +89,15 @@ int main(void){
     thread_pool_task_post(pool, &task1);
     thread_pool_task_post(pool, &task2);
     thread_pool_task_post(pool, &task3);
+
     while(1);
+}
+
+int main(void){
+    //daemonize();
+    
+    // test_threadpool();
+    test_tree();
+
+    return 0;
 }
