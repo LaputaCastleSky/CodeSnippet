@@ -7,35 +7,28 @@ typedef struct alg_stack_s alg_stack_t;
 
 struct alg_stack_s{
     alg_stack_t *next;
-    alg_stack_t *prev;
 };
 
 #define alg_stack_init(s)           \
-    (s)->next = (s);                \
-    (s)->prev = (s);
+    (s)->next = (s)                
 
 #define alg_stack_empty(s)          \
-    ((s) == (s)->prev)
+    ((s) == (s)->next)
 
-#define alg_stack_remove(x)         \
-    (x)->next->prev = (x)->prev;    \
-    (x)->prev->next = (x)->next;    \
-    (x)->next = NULL;               \
-    (x)->prev = NULL
+#define alg_stack_remove_first(s)   \
+    (s)->next = (s)->next->next
 
 #define alg_stack_top(s)            \
     (s)->next
 
-#define alg_stack_push(t, x)        \
-    (x)->next = (t)->next;          \
-    (x)->next->prev = x;            \
-    (x)->prev = t;                  \
-    (t)->next = x
+#define alg_stack_push(s, x)        \
+    (x)->next = (s)->next;          \
+    (s)->next = x
 
 static alg_stack_t *_stack_pop(alg_stack_t *s){
     alg_stack_t *t = NULL;
     t = alg_stack_top(s);
-    alg_stack_remove(t);
+    alg_stack_remove_first(s);
     return t;
 }
 

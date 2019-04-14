@@ -26,8 +26,8 @@ struct tree_s{
 
 #define tree_init(t)                \
     (t)->root = NULL;               \
-    alg_stack_init(&((t)->stack));  \
-    queue_init(&((t)->queue))
+    alg_stack_init(&(t)->stack);  \
+    queue_init(&(t)->queue)
 
 int* tree_preorder_traversal(tree_t* tree, int* return_size);
 int* tree_inorder_traversal(tree_t* tree, int* return_size);
