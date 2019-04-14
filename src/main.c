@@ -62,11 +62,17 @@ void test_tree(){
         tree_insert(&t, vals[i]);
     }
 
+    printf("tree_inorder_without_recursion:\n");
     tree_inorder_without_recursion(&t);
+    printf("tree_preorder_without_recursion1:\n");
     tree_preorder_without_recursion1(&t);
+    printf("tree_postorder_without_recursion:\n");
     tree_postorder_without_recursion(&t);
+    printf("tree_level_order:\n");
+    tree_level_order(&t);
 
     int *arr = NULL;
+    printf("tree_preorder_traversal:\n");
     arr = tree_preorder_traversal(&t, &size);
     for(i = 0; i < size; i++){
         printf("%4d", arr[i]);

@@ -18,7 +18,7 @@ struct queue_s{
 #define queue_head(h)               \
     (h)->next
 
-#define queue_last(q)               \
+#define queue_last(h)               \
     (h)->prev
 
 #define queue_empty(h)              \
@@ -49,7 +49,7 @@ struct queue_s{
     (x)->prev = NULL
 
 #define queue_data(q, type, link)   \
-    (type *)((u_char*)(q) - offsetof(type, link))
+    (type *)((char*)(q) - offsetof(type, link))
 
 
 #endif  //! endif _QUEUE_H_INCLUDE_

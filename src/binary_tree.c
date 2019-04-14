@@ -162,6 +162,31 @@ int* tree_postorder_traversal(tree_t* tree, int* return_size) {
     return arr;
 }
 
+void tree_level_order(tree_t *tree){
+    if(tree->root == NULL){
+        return;
+    }
+
+    tree_node_t *p = NULL;
+    queue_t *q = NULL;
+
+    queue_insert_head(&tree->queue, &tree->root->queue_node);
+    while (!queue_empty(&tree->queue))
+    {
+        q = queue_last(&tree->queue);
+        p = queue_data(q, tree_node_t, queue_node);
+        queue_remove(q);
+        printf("%4d", p->val);
+        if(p->left != NULL){
+            queue_insert_head(&tree->queue, &p->left->queue_node);
+        }
+        if(p->right != NULL){
+            queue_insert_head(&tree->queue, &p->right->queue_node);
+        }
+    }
+    printf("\n");
+}
+
 tree_node_t *tree_search(tree_node_t *root, int val){
     if(root == NULL || root->val == val){
         return root;
