@@ -29,7 +29,6 @@ void daemonize(){
             close(fd);
         }
     }
-    
 }
 
 void func1(void *arg){

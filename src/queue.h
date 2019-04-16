@@ -48,6 +48,12 @@ struct queue_s{
     (x)->next = NULL;               \
     (x)->prev = NULL
 
+#define queue_add(h, n)             \
+    (h)->prev->next = (n)->next;    \
+    (n)->next->prev = (h)->prev;    \
+    (h)->prev = (n)->next;          \
+    (h)->prev->next = h
+
 #define queue_data(q, type, link)   \
     (type *)((char*)(q) - offsetof(type, link))
 
